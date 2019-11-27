@@ -1,5 +1,6 @@
 
 import 'package:flutter/material.dart';
+import 'package:password_manager/main_search_page.dart';
 import 'squtils.dart';
 
 class LoginPage extends StatefulWidget {
@@ -373,6 +374,8 @@ class LoginState extends State<LoginPage> {
     );
   }
 
+
+
   tapNum(int num) {
     print(num.toString());
     password = password + "$num";
@@ -384,6 +387,7 @@ class LoginState extends State<LoginPage> {
 
   submit() {
     if (password == "123456") {
+      Navigator.pushReplacementNamed(context,'/a');
       print("成功");
     } else {
       print("失败");

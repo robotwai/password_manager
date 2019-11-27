@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:password_manager/login.dart';
+import 'package:password_manager/main_search_page.dart';
 void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
@@ -21,6 +22,9 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
       ),
       home: LoginPage(),
+      routes: <String, WidgetBuilder>{
+        '/a': (BuildContext context) => new MainSearchPage(),
+      },
     );
   }
 }
