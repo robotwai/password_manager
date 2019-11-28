@@ -5,9 +5,9 @@ class Password{
   String url;
   String type;
   String password;
-
-
-  Password(this.name, this.url, this.type, this.password);
+  String icon;
+  int star;
+  Password(this.name, this.url, this.type, this.password,this.icon,this.star);
 
   Map<String, dynamic> toMap() {
     return {
@@ -16,6 +16,8 @@ class Password{
       'url': url,
       'type': type,
       'password': password,
+      'icon': icon,
+      'star': star
     };
   }
   Password.fromMap(Map map) {
@@ -24,6 +26,8 @@ class Password{
     url = map['url'];
     type = map['type'];
     password = map['password'];
+    icon = map['icon'];
+    star = map['star'];
   }
   Password.fromJson(Map<String, dynamic> json)
       :
@@ -31,7 +35,9 @@ class Password{
         url=json['url'],
         type=json['type'],
         password=json['password'],
-        id = json['id']
+        id = json['id'],
+        icon = json['icon'],
+        star = json['star']
   ;
 
   Map<String, dynamic> toJson() =>
@@ -41,6 +47,8 @@ class Password{
         'url': url,
         'type': type,
         'password': password,
+        'icon': icon,
+        'star': star
       };
 
 }

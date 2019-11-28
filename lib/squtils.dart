@@ -11,7 +11,7 @@ class SQUtils {
   String dbName = 'password.db';
   static String tabName = 'password_table';
   String sqlCreateTable =
-      "CREATE TABLE '$tabName' (id INTEGER PRIMARY KEY, name TEXT,url TEXT,type TEXT,password TEXT)";
+      "CREATE TABLE '$tabName' (id INTEGER PRIMARY KEY, name TEXT,url TEXT,type TEXT,password TEXT,icon TEXT,star INTEGER)";
   Future init() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     var json = prefs.getString('password_db_path');
@@ -39,18 +39,22 @@ class SQUtils {
         var _url = mic.url;
         var _type = mic.type;
         var _password = mic.password;
+        var _icon = mic.icon;
+        var _star = mic.star;
         String sql = " REPLACE INTO '$tabName'"
-            "(id,name,url,type,password)"
-            " VALUES('$_id','$_name','$_url','$_type','$_password')";
+            "(id,name,url,type,password,icon,star)"
+            " VALUES('$_id','$_name','$_url','$_type','$_password','$_icon','$_star')";
         await txn.rawInsert(sql);
       }else{
           var _name = mic.name;
           var _url = mic.url;
           var _type = mic.type;
           var _password = mic.password;
+          var _icon = mic.icon;
+          var _star = mic.star;
           String sql = " REPLACE INTO '$tabName'"
-              "(name,url,type,password)"
-              " VALUES('$_name','$_url','$_type','$_password')";
+              "(name,url,type,password,icon,star)"
+              " VALUES('$_name','$_url','$_type','$_password','$_icon','$_star')";
           await txn.rawInsert(sql);
       }
 
