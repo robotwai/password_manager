@@ -1,6 +1,9 @@
 import 'dart:math';
-
+import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:password_manager/edit_password_page.dart';
 import 'package:password_manager/squtils.dart';
 import 'password.dart';
 
@@ -21,7 +24,7 @@ class MainSearchState extends State<MainSearchPage> {
         // Here we take the value from the MyHomePage object that was created by
         // the App.build method, and use it to set our appbar title.
         child: buildSearch(),
-        preferredSize: Size(MediaQuery.of(context).size.width,40.0),
+        preferredSize: Size(MediaQuery.of(context).size.width, 40.0),
       ),
       body: Container(
         color: Colors.white10,
@@ -35,15 +38,16 @@ class MainSearchState extends State<MainSearchPage> {
     );
   }
 
-  int num = 0;
+
   void _addPassword() {
-    num++;
-    SQUtils.origin
-        .insert(Password("Name" + num.toString(),
-            "url baidu.com" + num.toString(), "t", "p", "", 0))
-        .then((onValue) {
-      getData();
-    });
+
+    Navigator.of(context)
+        .push(new PageRouteBuilder(
+      opaque: false,
+      pageBuilder: (BuildContext context, _, __) {
+        return new EditPasswordPage("新增密码");
+      },
+    ));
   }
 
   Widget buildList() {
@@ -61,41 +65,50 @@ class MainSearchState extends State<MainSearchPage> {
     return new Container(
       width: MediaQuery.of(context).size.width,
       height: 44.0,
+      padding: EdgeInsets.only(left: 10.0),
       margin: EdgeInsets.only(top: MediaQuery.of(context).padding.top),
-      color: Colors.transparent,
+//      color: Colors.transparent,
+      decoration: BoxDecoration(
+        //背景
+        color: Colors.transparent,
+        //设置四周圆角 角度
+        borderRadius: BorderRadius.all(Radius.circular(4.0)),
+        //设置四周边框
+        border: new Border.all(width: 1, color: Colors.blueAccent),
+      ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisAlignment: MainAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
-          Icon(Icons.search,size: 20,),
+          Icon(
+            Icons.search,
+            size: 20,
+          ),
           Container(
-            height: 40.0,
-            width: MediaQuery.of(context).size.width-20,
-            padding: EdgeInsets.only(left: 10.0,right: 10.0),
+            height: 44.0,
+            width: MediaQuery.of(context).size.width - 20 - 10 - 2,
+            padding: EdgeInsets.only(left: 10.0, right: 10.0),
             child: TextField(
               onChanged: (text) {
-//              _password = text;
-//              _onTextChange();
+                _onTextChange(text);
               },
-              obscureText: true,
               maxLines: 1,
               decoration: new InputDecoration(
-                hintText: '请输入密码',
-                border: UnderlineInputBorder(
-                    borderSide: BorderSide(width: 1.0)),
-                focusedBorder: UnderlineInputBorder(borderSide: BorderSide(
-                    width: 1.0, color: Colors.white10)),
+                hintText: '请输入关键字',
+                border:
+                    UnderlineInputBorder(borderSide: BorderSide(width: 0.0)),
+                focusedBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(width: 0.0, color: Colors.white10)),
               ),
               keyboardType: TextInputType.text,
-              onSubmitted: (text) {
-//              FocusScope.of(context).requestFocus(node);
-              },
             ),
           )
         ],
       ),
     );
   }
+
+  void _onTextChange(String text) {}
 
   Widget _buildRow(BuildContext context, int index) {
     if (datas.length == 0) {
@@ -144,9 +157,47 @@ class MainSearchState extends State<MainSearchPage> {
             ),
           ),
         ),
-        onTap: () {},
+        onTap: () {
+          _showPassword(item);
+        },
       );
     }
+  }
+
+  _showPassword(Password password) async {
+    await showDialog<Null>(
+        context: context,
+        builder: (BuildContext context) {
+          return SimpleDialog(
+            title: const Text('密码详情'),
+            children: <Widget>[
+              SimpleDialogOption(
+              onPressed: () {
+                Clipboard.setData(ClipboardData(text: password.name));
+                Fluttertoast.showToast(msg: "帐号复制成功");
+              },
+                child: Row(
+                  children: <Widget>[
+                    Text("帐号："),
+                    Text(password.name)
+                  ],
+                ),
+              ),
+              SimpleDialogOption(
+                onPressed: () {
+                  Clipboard.setData(ClipboardData(text: password.password));
+                  Fluttertoast.showToast(msg: "密码复制成功");
+                },
+                child: Row(
+                  children: <Widget>[
+                    Text("密码："),
+                    Text(password.password)
+                  ],
+                ),
+              ),
+            ],
+          );
+        });
   }
 
   @override
