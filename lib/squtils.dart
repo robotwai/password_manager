@@ -63,13 +63,11 @@ class SQUtils {
   }
 
 
-  Future<List<Password>> getList(int page) async {
+  Future<List<Password>> getList() async {
     var path = await CommonSP.getDBPath();
     Database db = await openDatabase(path);
-    int end = page * 30;
-    int start = (end - 30) > 0 ? (end - 30) : 0;
     String sqlQuery =
-        "SELECT * FROM '$tabName' ORDER BY id DESC LIMIT '$start','$end'";
+        "SELECT * FROM '$tabName' ORDER BY id DESC ";
     print(sqlQuery);
     List<Map> list = [];
     try {

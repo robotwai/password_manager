@@ -27,104 +27,106 @@ class LoginState extends State<LoginPage> {
             height: MediaQuery.of(context).size.height,
             fit: BoxFit.fitWidth,
           ),
-          Container(
-            margin: const EdgeInsets.only(top: 100.0),
-            child: Column(
-              children: <Widget>[
-                Center(
-                  child: Text(
-                    "请输入密码",
-                    style: TextStyle(color: Colors.white, fontSize: 18.0),
+          SingleChildScrollView(
+            child: Container(
+              margin: const EdgeInsets.only(top: 100.0),
+              child: Column(
+                children: <Widget>[
+                  Center(
+                    child: Text(
+                      "请输入密码",
+                      style: TextStyle(color: Colors.white, fontSize: 18.0),
+                    ),
                   ),
-                ),
-                Padding(
-                  padding: EdgeInsets.only(left: 60.0, right: 60.0, top: 20.0),
-                  child: Row(
+                  Padding(
+                    padding: EdgeInsets.only(left: 60.0, right: 60.0, top: 20.0),
+                    child: Row(
+                      children: <Widget>[
+                        ClipOval(
+                          child: Container(
+                            color:
+                            password.length > 0 ? Colors.blue : Colors.grey,
+                            width: showIndSize,
+                            height: showIndSize,
+                          ),
+                        ),
+                        ClipOval(
+                          child: Container(
+                            color:
+                            password.length > 1 ? Colors.blue : Colors.grey,
+                            width: showIndSize,
+                            height: showIndSize,
+                          ),
+                        ),
+                        ClipOval(
+                          child: Container(
+                            color:
+                            password.length > 2 ? Colors.blue : Colors.grey,
+                            width: showIndSize,
+                            height: showIndSize,
+                          ),
+                        ),
+                        ClipOval(
+                          child: Container(
+                            color:
+                            password.length > 3 ? Colors.blue : Colors.grey,
+                            width: showIndSize,
+                            height: showIndSize,
+                          ),
+                        ),
+                        ClipOval(
+                          child: Container(
+                            color:
+                            password.length > 4 ? Colors.blue : Colors.grey,
+                            width: showIndSize,
+                            height: showIndSize,
+                          ),
+                        ),
+                        ClipOval(
+                          child: Container(
+                            color:
+                            password.length > 5 ? Colors.blue : Colors.grey,
+                            width: showIndSize,
+                            height: showIndSize,
+                          ),
+                        )
+                      ],
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      mainAxisSize: MainAxisSize.max,
+                    ),
+                  ),
+                  getNum(),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    mainAxisSize: MainAxisSize.max,
                     children: <Widget>[
-                      ClipOval(
+                      GestureDetector(
                         child: Container(
-                          color:
-                              password.length > 0 ? Colors.blue : Colors.grey,
-                          width: showIndSize,
-                          height: showIndSize,
+                          margin: EdgeInsets.only(top: 20.0,bottom: 20.0),
+                          child: Text(
+                            "忘记密码",
+                            style: TextStyle(fontSize: 14.0, color: Colors.white),
+                          ),
                         ),
+                        onTap: forget,
                       ),
-                      ClipOval(
+                      GestureDetector(
                         child: Container(
-                          color:
-                              password.length > 1 ? Colors.blue : Colors.grey,
-                          width: showIndSize,
-                          height: showIndSize,
+                          margin: EdgeInsets.only(top: 20.0,bottom: 20.0),
+                          child: Text(
+                            "清除",
+                            style: TextStyle(fontSize: 14.0, color: Colors.white),
+                          ),
                         ),
-                      ),
-                      ClipOval(
-                        child: Container(
-                          color:
-                              password.length > 2 ? Colors.blue : Colors.grey,
-                          width: showIndSize,
-                          height: showIndSize,
-                        ),
-                      ),
-                      ClipOval(
-                        child: Container(
-                          color:
-                              password.length > 3 ? Colors.blue : Colors.grey,
-                          width: showIndSize,
-                          height: showIndSize,
-                        ),
-                      ),
-                      ClipOval(
-                        child: Container(
-                          color:
-                              password.length > 4 ? Colors.blue : Colors.grey,
-                          width: showIndSize,
-                          height: showIndSize,
-                        ),
-                      ),
-                      ClipOval(
-                        child: Container(
-                          color:
-                              password.length > 5 ? Colors.blue : Colors.grey,
-                          width: showIndSize,
-                          height: showIndSize,
-                        ),
+                        onTap: clearNum,
                       )
                     ],
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    mainAxisSize: MainAxisSize.max,
-                  ),
-                ),
-                getNum(),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  mainAxisSize: MainAxisSize.max,
-                  children: <Widget>[
-                    GestureDetector(
-                      child: Container(
-                        margin: EdgeInsets.only(top: 20.0),
-                        child: Text(
-                          "忘记密码",
-                          style: TextStyle(fontSize: 14.0, color: Colors.white),
-                        ),
-                      ),
-                      onTap: forget,
-                    ),
-                    GestureDetector(
-                      child: Container(
-                        margin: EdgeInsets.only(top: 20.0),
-                        child: Text(
-                          "清除",
-                          style: TextStyle(fontSize: 14.0, color: Colors.white),
-                        ),
-                      ),
-                      onTap: clearNum,
-                    )
-                  ],
-                )
-              ],
-              crossAxisAlignment: CrossAxisAlignment.center,
+                  )
+                ],
+                crossAxisAlignment: CrossAxisAlignment.center,
+              ),
             ),
           )
         ],

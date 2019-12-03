@@ -47,7 +47,11 @@ class MainSearchState extends State<MainSearchPage> {
       pageBuilder: (BuildContext context, _, __) {
         return new EditPasswordPage("新增密码");
       },
-    ));
+    )).then((onValue){
+      if(onValue==1){
+        getData();
+      }
+    });
   }
 
   Widget buildList() {
@@ -74,7 +78,7 @@ class MainSearchState extends State<MainSearchPage> {
         //设置四周圆角 角度
         borderRadius: BorderRadius.all(Radius.circular(4.0)),
         //设置四周边框
-        border: new Border.all(width: 1, color: Colors.blueAccent),
+        border: new Border.all(width: 1, color: Colors.lightBlueAccent),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -95,10 +99,8 @@ class MainSearchState extends State<MainSearchPage> {
               maxLines: 1,
               decoration: new InputDecoration(
                 hintText: '请输入关键字',
-                border:
-                    UnderlineInputBorder(borderSide: BorderSide(width: 0.0)),
-                focusedBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(width: 0.0, color: Colors.white10)),
+                border:InputBorder.none,
+
               ),
               keyboardType: TextInputType.text,
             ),
@@ -132,6 +134,7 @@ class MainSearchState extends State<MainSearchPage> {
                 Container(
                   width: 40.0,
                   height: 40.0,
+                  margin: EdgeInsets.only(top: 10.0,bottom: 10.0),
                   color: Colors.white70,
                   child: Center(
                     child: Text(
@@ -144,11 +147,11 @@ class MainSearchState extends State<MainSearchPage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     Text(
-                      item.url,
+                      item.name,
                       style: TextStyle(color: Colors.black87, fontSize: 14.0),
                     ),
                     Text(
-                      item.name,
+                      item.url,
                       style: TextStyle(color: Colors.black87, fontSize: 14.0),
                     )
                   ],
@@ -179,7 +182,7 @@ class MainSearchState extends State<MainSearchPage> {
                 child: Row(
                   children: <Widget>[
                     Text("帐号："),
-                    Text(password.name)
+                    Text(password.url)
                   ],
                 ),
               ),
@@ -207,7 +210,7 @@ class MainSearchState extends State<MainSearchPage> {
   }
 
   void getData() {
-    SQUtils.origin.getList(1).then((onValue) {
+    SQUtils.origin.getList().then((onValue) {
       datas = onValue;
       setState(() {});
     });

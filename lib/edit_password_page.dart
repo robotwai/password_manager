@@ -1,5 +1,8 @@
 
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:password_manager/password.dart';
+import 'package:password_manager/squtils.dart';
 
 class EditPasswordPage extends StatefulWidget{
   final String title;
@@ -16,20 +19,140 @@ class EditPasswordState extends State<EditPasswordPage>{
   String title;
 
   EditPasswordState(this.title);
+  bool _hide = false;
 
+  String _email;
+  String _password;
+  String _name;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: Text(title),
+        title: Text(title,style: TextStyle(
+          fontSize: 18.0
+        ),),
       ),
-      body: Container(
-        color: Colors.white,
-        child: Center(
-          child: Text(title),
+      body: SingleChildScrollView(
+        child: Container(
+          padding: EdgeInsets.only(top: 20,left: 10,right: 10),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: <Widget>[
+              Container(
+                child: TextField(
+                  onChanged: (str){
+                    _name = str;
+                  },
+                  obscureText: false,
+                  decoration: InputDecoration(
+                      border: OutlineInputBorder(),
+                      labelText: '请输入App名称或网站名称',
+                      labelStyle: TextStyle(
+                          fontSize: 12.0
+                      )
+                  ),
+                ),
+                height: 44.0,
+              ),
+              Container(
+                child: TextField(
+                  onChanged: (str){
+                    _email = str;
+                  },
+                  obscureText: false,
+                  decoration: InputDecoration(
+                      border: OutlineInputBorder(),
+                      labelText: '请输入登录用户名',
+                      labelStyle: TextStyle(
+                          fontSize: 12.0
+                      )
+                  ),
+                ),
+                height: 44.0,
+                margin: EdgeInsets.only(top: 20),
+              ),
+              Container(
+                child: TextField(
+                  onChanged: (str){
+                    _password = str;
+                  },
+                  obscureText: false,
+                  decoration: InputDecoration(
+                      border: OutlineInputBorder(),
+                      labelText: '请输入密码',
+                      labelStyle: TextStyle(
+                          fontSize: 12.0
+                      )
+                  ),
+                ),
+                height: 44.0,
+                margin: EdgeInsets.only(top: 20),
+              ),
+              Container(
+
+                height: 44.0,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: <Widget>[
+                    Text("仅支持搜索"),
+                    Container(
+                      width: 100.0,
+                      child: SwitchListTile(
+                        dense: true,
+                        value: _hide,
+                        onChanged: (bool value) { setState(() { _hide = value; }); },
+
+                      ),
+                    )
+                  ],
+                ),
+                margin: EdgeInsets.only(top: 10),
+              ),
+
+            ],
+          ),
         ),
       ),
+      bottomNavigationBar: new Container(
+        width: MediaQuery
+            .of(context)
+            .size
+            .width,
+        height: 48.0,
+        alignment: Alignment.centerRight,
+        child: new Container(
+          margin: const EdgeInsets.only(right: 14.0),
+          child: new Material(
+            borderRadius: BorderRadius.circular(24.0),
+            child: new RaisedButton(
+              onPressed: () {
+                onPressed();
+              },
+              child: new Text('保存',
+                  style: new TextStyle(fontSize: 14.0, color: Colors.white),
+                  maxLines: 1),
+              color: Colors.blueAccent,
+              elevation: 0.0,
+            ),
+          ),
+          height: 40.0,
+          width: 90.0,
+        ),
+      ),
+      resizeToAvoidBottomPadding: true,
     );
+  }
+
+  void onPressed(){
+    if(_email.isEmpty||_password.isEmpty||_name.isEmpty){
+      Fluttertoast.showToast(msg: "请确认输入信息完整");
+      return;
+    }
+    SQUtils.origin.insert(Password(_name,_email,"",_password,"",_hide?-1:0))
+      .then((onValue){
+      Fluttertoast.showToast(msg: "密码添加成功");
+      Navigator.of(context).pop(1);
+    });
   }
 }
