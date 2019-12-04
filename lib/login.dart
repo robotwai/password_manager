@@ -21,11 +21,11 @@ class LoginState extends State<LoginPage> {
     return Scaffold(
       body: Stack(
         children: <Widget>[
-          Image.asset(
-            "images/login.jpg",
+          Container(
+            color: Color(0xFF4F9964),
             width: MediaQuery.of(context).size.width,
             height: MediaQuery.of(context).size.height,
-            fit: BoxFit.fitWidth,
+
           ),
           SingleChildScrollView(
             child: Container(
