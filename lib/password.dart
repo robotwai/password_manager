@@ -9,6 +9,10 @@ class Password{
   int star;
   Password(this.name, this.url, this.type, this.password,this.icon,this.star);
 
+
+  Password.name(this.id, this.name, this.url, this.type, this.password,
+      this.icon, this.star);
+
   Map<String, dynamic> toMap() {
     return {
       'id': id,

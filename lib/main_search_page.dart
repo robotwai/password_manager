@@ -16,6 +16,8 @@ class MainSearchPage extends StatefulWidget {
 
 class MainSearchState extends State<MainSearchPage> {
   List<Password> datas = [];
+  String _key = "";
+  TextEditingController _controller = new TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +33,9 @@ class MainSearchState extends State<MainSearchPage> {
         child: buildList(),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: _addPassword,
+        onPressed:(){
+          _addPassword(0);
+        },
         tooltip: '新增密码',
         child: new Icon(Icons.add),
       ),
@@ -39,16 +43,18 @@ class MainSearchState extends State<MainSearchPage> {
   }
 
 
-  void _addPassword() {
+  _addPassword(int id) {
 
     Navigator.of(context)
         .push(new PageRouteBuilder(
       opaque: false,
       pageBuilder: (BuildContext context, _, __) {
-        return new EditPasswordPage("新增密码");
+        return new EditPasswordPage(id);
       },
     )).then((onValue){
       if(onValue==1){
+        _controller.text = "";
+        _key="";
         getData();
       }
     });
@@ -96,6 +102,7 @@ class MainSearchState extends State<MainSearchPage> {
               onChanged: (text) {
                 _onTextChange(text);
               },
+              controller: _controller,
               maxLines: 1,
               decoration: new InputDecoration(
                 hintText: '请输入关键字',
@@ -110,11 +117,15 @@ class MainSearchState extends State<MainSearchPage> {
     );
   }
 
-  void _onTextChange(String text) {}
+  void _onTextChange(String text) {
+    _key = text;
+    getData();
+  }
 
   Widget _buildRow(BuildContext context, int index) {
     if (datas.length == 0) {
       return Container(
+        height: 200,
         child: Center(
           child: Text("还没有保存密码"),
         ),
@@ -163,6 +174,9 @@ class MainSearchState extends State<MainSearchPage> {
         onTap: () {
           _showPassword(item);
         },
+        onLongPress: (){
+          _showEdit(item);
+        },
       );
     }
   }
@@ -203,6 +217,107 @@ class MainSearchState extends State<MainSearchPage> {
         });
   }
 
+  void _showEdit(Password item){
+    showModalBottomSheet<Null>(
+        context: context,
+        builder: (BuildContext context) {
+          return new Container(
+              height: 121.0,
+              child: new Column(
+                children: <Widget>[
+
+                  new GestureDetector(
+                    child: new Container(
+                      child: new Text(
+                        '编辑',
+                        style: new TextStyle(
+                            color: Colors.black87, fontSize: 14.0),
+                      ),
+                      height: 60.0,
+                      width: MediaQuery
+                          .of(context)
+                          .size
+                          .width,
+                      alignment: Alignment.center,
+                      color: Color(0xffffffff),
+                    ),
+                    onTap: () {
+                      Navigator.of(context).pop();
+                      _addPassword(item.id);
+                    },
+                  ),
+                  new Padding(
+                    padding: const EdgeInsets.only(left: 14.0, right: 14.0),
+                    child: new Divider(
+                      height: 1.0,
+                    ),
+                  ),
+                  new GestureDetector(
+                    child: new Container(
+                      child: new Text(
+                        '删除',
+                        style: new TextStyle(
+                            color: Colors.redAccent, fontSize: 14.0),
+                      ),
+                      height: 60.0,
+                      width: MediaQuery
+                          .of(context)
+                          .size
+                          .width,
+                      alignment: Alignment.center,
+                      color: Color(0xffffffff),
+                    ),
+                    onTap: () {
+                      Navigator.of(context).pop();
+                      deletePassword(item);
+                    },
+                  ),
+
+                ],
+              ));
+        });
+  }
+  Future<void> deletePassword(Password item) async {
+    String _name =item.name;
+    String _password = item.password;
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false, // user must tap button!
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('确认你的操作'),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text("你将删除帐号为：$_name 密码是$_password"),
+                Text('你的操作不可逆，密码会直接删除，没有同步',style: TextStyle(color: Colors.red),),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            FlatButton(
+              child: Text('取消'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            FlatButton(
+              child: Text('删除',style: TextStyle(color: Colors.red),),
+              onPressed: () {
+                Navigator.of(context).pop();
+                SQUtils.origin.delete(item.id).then((onValue){
+                  Fluttertoast.showToast(msg: "删除成功");
+                  getData();
+                });
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+
   @override
   void initState() {
     super.initState();
@@ -210,7 +325,7 @@ class MainSearchState extends State<MainSearchPage> {
   }
 
   void getData() {
-    SQUtils.origin.getList().then((onValue) {
+    SQUtils.origin.getList(_key).then((onValue) {
       datas = onValue;
       setState(() {});
     });

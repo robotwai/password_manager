@@ -1,4 +1,6 @@
 
+import 'dart:math';
+
 import 'package:password_manager/password.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -63,11 +65,17 @@ class SQUtils {
   }
 
 
-  Future<List<Password>> getList() async {
+  Future<List<Password>> getList(String key) async {
     var path = await CommonSP.getDBPath();
     Database db = await openDatabase(path);
-    String sqlQuery =
-        "SELECT * FROM '$tabName' ORDER BY id DESC ";
+    String sqlQuery;
+    if(key.isEmpty){
+      sqlQuery =
+      "SELECT * FROM '$tabName' WHERE star>=0 ORDER BY id DESC ";
+    }else{
+      sqlQuery = "SELECT * FROM '$tabName' WHERE name LIKE '%$key%' OR url LIKE '%$key%' ORDER BY id DESC ";
+    }
+
     print(sqlQuery);
     List<Map> list = [];
     try {
@@ -81,5 +89,35 @@ class SQUtils {
     return list.map((model) {
       return new Password.fromJson(model);
     }).toList();
+  }
+
+  Future<Password> getSingle(int id) async{
+    try {
+      String path = await CommonSP.getDBPath();
+      Database db = await openDatabase(path);
+      String sql_query = "SELECT * FROM '$tabName' WHERE ID= '$id'";
+      List<Map> list = await db.rawQuery(sql_query);
+      if (list != null) {
+        print(list);
+      }
+      return new Password.fromMap(list[0]);
+    } catch (exception) {
+      print(exception.toString());
+      return null;
+    }
+  }
+
+  Future<int> delete(int id) async {
+    try {
+      String path = await CommonSP.getDBPath();
+      Database db = await openDatabase(path);
+      String sql_query = "DELETE FROM '$tabName' WHERE ID= '$id'";
+      int i = await db.rawDelete(sql_query);
+      print('delete ' + '$i');
+      return i;
+    } catch (exception) {
+      print(exception.toString());
+      return null;
+    }
   }
 }

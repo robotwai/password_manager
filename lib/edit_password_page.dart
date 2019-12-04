@@ -5,31 +5,33 @@ import 'package:password_manager/password.dart';
 import 'package:password_manager/squtils.dart';
 
 class EditPasswordPage extends StatefulWidget{
-  final String title;
+  final int id;
 
-  EditPasswordPage(this.title);
+  EditPasswordPage(this.id);
 
   @override
   EditPasswordState createState() {
-    return EditPasswordState(title);
+    return EditPasswordState(id);
   }
 }
 
 class EditPasswordState extends State<EditPasswordPage>{
-  String title;
-
-  EditPasswordState(this.title);
+  int id;
+  EditPasswordState(this.id);
   bool _hide = false;
 
-  String _email;
-  String _password;
-  String _name;
+  String _email="";
+  String _password="";
+  String _name="";
+  TextEditingController _emailController = new TextEditingController();
+  TextEditingController _passwordController = new TextEditingController();
+  TextEditingController _nameController = new TextEditingController();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: Text(title,style: TextStyle(
+        title: Text(id==0?"新增密码":"编辑密码",style: TextStyle(
           fontSize: 18.0
         ),),
       ),
@@ -44,6 +46,7 @@ class EditPasswordState extends State<EditPasswordPage>{
                   onChanged: (str){
                     _name = str;
                   },
+                  controller: _nameController,
                   obscureText: false,
                   decoration: InputDecoration(
                       border: OutlineInputBorder(),
@@ -60,6 +63,7 @@ class EditPasswordState extends State<EditPasswordPage>{
                   onChanged: (str){
                     _email = str;
                   },
+                  controller: _emailController,
                   obscureText: false,
                   decoration: InputDecoration(
                       border: OutlineInputBorder(),
@@ -77,6 +81,7 @@ class EditPasswordState extends State<EditPasswordPage>{
                   onChanged: (str){
                     _password = str;
                   },
+                  controller: _passwordController,
                   obscureText: false,
                   decoration: InputDecoration(
                       border: OutlineInputBorder(),
@@ -145,14 +150,36 @@ class EditPasswordState extends State<EditPasswordPage>{
   }
 
   void onPressed(){
-    if(_email.isEmpty||_password.isEmpty||_name.isEmpty){
+    if(_email==""||_password==""||_name==""){
       Fluttertoast.showToast(msg: "请确认输入信息完整");
       return;
     }
-    SQUtils.origin.insert(Password(_name,_email,"",_password,"",_hide?-1:0))
+    SQUtils.origin.insert(id!=0?Password.name(id,_name,_email,"",_password,"",_hide?-1:0):Password(_name,_email,"",_password,"",_hide?-1:0))
       .then((onValue){
       Fluttertoast.showToast(msg: "密码添加成功");
       Navigator.of(context).pop(1);
     });
   }
+
+  @override
+  void initState() {
+    super.initState();
+    SQUtils.origin.getSingle(id).then((onValue){
+      if(onValue!=null){
+        _emailController.text = onValue.url;
+        _email = onValue.url;
+        _nameController.text = onValue.name;
+        _name = onValue.name;
+        _passwordController.text = onValue.password;
+        _password = onValue.password;
+        _hide = onValue.star==-1;
+        setState(() {
+
+        });
+      }
+    });
+
+  }
+
+
 }
