@@ -1,10 +1,10 @@
 
 class Password{
   int id;
-  String name;
-  String url;
+  String name;//username 登录帐号
+  String url;//app名字或网页url
   String type;
-  String password;
+  String password;//密码
   String icon;
   int star;
   Password(this.name, this.url, this.type, this.password,this.icon,this.star);

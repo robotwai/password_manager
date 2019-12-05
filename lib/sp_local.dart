@@ -24,4 +24,15 @@ class CommonSP{
     var json = prefs.getString('email');
     return json;
   }
+
+  static Future savePassword(String json) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setString('password', json);
+  }
+
+  static Future<String> getPassword() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    var json = prefs.getString('password');
+    return json;
+  }
 }

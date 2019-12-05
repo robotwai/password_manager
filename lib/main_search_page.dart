@@ -3,9 +3,11 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:password_manager/constants.dart';
 import 'package:password_manager/edit_password_page.dart';
 import 'package:password_manager/squtils.dart';
 import 'password.dart';
+import 'package:qr_flutter/qr_flutter.dart';
 
 class MainSearchPage extends StatefulWidget {
   @override
@@ -33,7 +35,7 @@ class MainSearchState extends State<MainSearchPage> {
         child: buildList(),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed:(){
+        onPressed: () {
           _addPassword(0);
         },
         tooltip: '新增密码',
@@ -42,19 +44,18 @@ class MainSearchState extends State<MainSearchPage> {
     );
   }
 
-
   _addPassword(int id) {
-
     Navigator.of(context)
         .push(new PageRouteBuilder(
       opaque: false,
       pageBuilder: (BuildContext context, _, __) {
         return new EditPasswordPage(id);
       },
-    )).then((onValue){
-      if(onValue==1){
+    ))
+        .then((onValue) {
+      if (onValue == 1) {
         _controller.text = "";
-        _key="";
+        _key = "";
         getData();
       }
     });
@@ -84,9 +85,10 @@ class MainSearchState extends State<MainSearchPage> {
         //设置四周圆角 角度
         borderRadius: BorderRadius.all(Radius.circular(4.0)),
         //设置四周边框
-        border: new Border.all(width: 1, color: Colors.lightBlueAccent),
+        border:
+            new Border.all(width: 1, color: Constants.primaryColor.shade300),
       ),
-      child: Row(
+      child: Center(child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
@@ -106,14 +108,13 @@ class MainSearchState extends State<MainSearchPage> {
               maxLines: 1,
               decoration: new InputDecoration(
                 hintText: '请输入关键字',
-                border:InputBorder.none,
-
+                border: InputBorder.none,
               ),
               keyboardType: TextInputType.text,
             ),
           )
         ],
-      ),
+      ),),
     );
   }
 
@@ -145,11 +146,11 @@ class MainSearchState extends State<MainSearchPage> {
                 Container(
                   width: 40.0,
                   height: 40.0,
-                  margin: EdgeInsets.only(top: 10.0,bottom: 10.0),
+                  margin: EdgeInsets.only(top: 10.0, bottom: 10.0),
                   color: Colors.white70,
                   child: Center(
                     child: Text(
-                      item.name.substring(0, 1),
+                      item.url.substring(0, 1),
                       style: TextStyle(color: Colors.blue, fontSize: 16.0),
                     ),
                   ),
@@ -158,11 +159,11 @@ class MainSearchState extends State<MainSearchPage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     Text(
-                      item.name,
+                      item.url,
                       style: TextStyle(color: Colors.black87, fontSize: 14.0),
                     ),
                     Text(
-                      item.url,
+                      item.name,
                       style: TextStyle(color: Colors.black87, fontSize: 14.0),
                     )
                   ],
@@ -174,50 +175,78 @@ class MainSearchState extends State<MainSearchPage> {
         onTap: () {
           _showPassword(item);
         },
-        onLongPress: (){
+        onLongPress: () {
           _showEdit(item);
         },
       );
     }
   }
 
-  _showPassword(Password password) async {
-    await showDialog<Null>(
+  _showPassword(Password password) {
+    showModalBottomSheet<Null>(
         context: context,
         builder: (BuildContext context) {
-          return SimpleDialog(
-            title: const Text('密码详情'),
-            children: <Widget>[
-              SimpleDialogOption(
-              onPressed: () {
-                Clipboard.setData(ClipboardData(text: password.name));
-                Fluttertoast.showToast(msg: "帐号复制成功");
-              },
-                child: Row(
-                  children: <Widget>[
-                    Text("帐号："),
-                    Text(password.url)
-                  ],
-                ),
-              ),
-              SimpleDialogOption(
-                onPressed: () {
-                  Clipboard.setData(ClipboardData(text: password.password));
-                  Fluttertoast.showToast(msg: "密码复制成功");
-                },
-                child: Row(
-                  children: <Widget>[
-                    Text("密码："),
-                    Text(password.password)
-                  ],
-                ),
-              ),
-            ],
-          );
+          return OrientationBuilder(builder: (context, orientation) {
+            return Container(
+              child: orientation == Orientation.portrait
+                  ? Column(
+                      children: <Widget>[
+                        showNumPassword(password),
+                        showQR(password)
+                      ],
+                    )
+                  : Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        showNumPassword(password),
+                        showQR(password)
+                      ],
+                    ),
+            );
+          });
         });
   }
 
-  void _showEdit(Password item){
+  Widget showQR(Password password) {
+    return QrImage(
+      data: "url:" +
+          password.url +
+          " username:" +
+          password.name +
+          " password:" +
+          password.password,
+      version: QrVersions.auto,
+      size: 200.0,
+    );
+  }
+
+  Widget showNumPassword(Password password) {
+    return SimpleDialog(
+      title: const Text('密码详情'),
+      children: <Widget>[
+        SimpleDialogOption(
+          onPressed: () {
+            Clipboard.setData(ClipboardData(text: password.url));
+            Fluttertoast.showToast(msg: "帐号复制成功");
+          },
+          child: Row(
+            children: <Widget>[Text("帐号："), Text(password.name)],
+          ),
+        ),
+        SimpleDialogOption(
+          onPressed: () {
+            Clipboard.setData(ClipboardData(text: password.password));
+            Fluttertoast.showToast(msg: "密码复制成功");
+          },
+          child: Row(
+            children: <Widget>[Text("密码："), Text(password.password)],
+          ),
+        ),
+      ],
+    );
+  }
+
+  void _showEdit(Password item) {
     showModalBottomSheet<Null>(
         context: context,
         builder: (BuildContext context) {
@@ -225,7 +254,6 @@ class MainSearchState extends State<MainSearchPage> {
               height: 121.0,
               child: new Column(
                 children: <Widget>[
-
                   new GestureDetector(
                     child: new Container(
                       child: new Text(
@@ -234,10 +262,7 @@ class MainSearchState extends State<MainSearchPage> {
                             color: Colors.black87, fontSize: 14.0),
                       ),
                       height: 60.0,
-                      width: MediaQuery
-                          .of(context)
-                          .size
-                          .width,
+                      width: MediaQuery.of(context).size.width,
                       alignment: Alignment.center,
                       color: Color(0xffffffff),
                     ),
@@ -260,10 +285,7 @@ class MainSearchState extends State<MainSearchPage> {
                             color: Colors.redAccent, fontSize: 14.0),
                       ),
                       height: 60.0,
-                      width: MediaQuery
-                          .of(context)
-                          .size
-                          .width,
+                      width: MediaQuery.of(context).size.width,
                       alignment: Alignment.center,
                       color: Color(0xffffffff),
                     ),
@@ -272,13 +294,13 @@ class MainSearchState extends State<MainSearchPage> {
                       deletePassword(item);
                     },
                   ),
-
                 ],
               ));
         });
   }
+
   Future<void> deletePassword(Password item) async {
-    String _name =item.name;
+    String _name = item.name;
     String _password = item.password;
     return showDialog<void>(
       context: context,
@@ -290,7 +312,10 @@ class MainSearchState extends State<MainSearchPage> {
             child: ListBody(
               children: <Widget>[
                 Text("你将删除帐号为：$_name 密码是$_password"),
-                Text('你的操作不可逆，密码会直接删除，没有同步',style: TextStyle(color: Colors.red),),
+                Text(
+                  '你的操作不可逆，密码会直接删除，没有同步',
+                  style: TextStyle(color: Colors.red),
+                ),
               ],
             ),
           ),
@@ -302,10 +327,13 @@ class MainSearchState extends State<MainSearchPage> {
               },
             ),
             FlatButton(
-              child: Text('删除',style: TextStyle(color: Colors.red),),
+              child: Text(
+                '删除',
+                style: TextStyle(color: Colors.red),
+              ),
               onPressed: () {
                 Navigator.of(context).pop();
-                SQUtils.origin.delete(item.id).then((onValue){
+                SQUtils.origin.delete(item.id).then((onValue) {
                   Fluttertoast.showToast(msg: "删除成功");
                   getData();
                 });
@@ -316,7 +344,6 @@ class MainSearchState extends State<MainSearchPage> {
       },
     );
   }
-
 
   @override
   void initState() {
